@@ -7,4 +7,6 @@ Installation Copy the file index.html from the html directory to a server.
 
 This is translation of FAIR-Data-Assessment-Tool (Authors Kerry Levett, Keith Russell, Martin Schweitzer, Kathryn Unsworth, Andrew White), you can find at https://github.com/au-research/FAIR-Data-Assessment-Tool
 
+Translation by Jan Skupa and Petra Dedicova
+
 Licence These materials are covered by a GNU GPLv3 licence
