@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Nástroj pro sebehodnocení FAIR</title>
+
+
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+    </script>
+
+    <!-- Bootstrap via CDN -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+
+    <!-- Optional theme -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
+
+    </script>
+
+
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .w3-container:after,.w3-container:before,.w3-panel:after,.w3-panel:before,.w3-row:after,.w3-row:before,.w3-row-padding:after,.w3-row-padding:before,
+        .w3-cell-row:before,.w3-cell-row:after,.w3-clear:after,.w3-clear:before,.w3-bar:before,.w3-bar:after{content:"";display:table;clear:both}
+        .w3-padding{padding:8px 0px!important}
+        .w3-green,.w3-hover-green:hover{color:#fff!important;background-color:#4CAF50!important}
+        .w3-border{border:1px solid #ccc!important}
+
+        .glyphicon-info-sign {font-size: 1.3em; color: #328cc7;}
+
+        a:link {color: #007B9A;}
+
+        a:visited {color: #007B9A;}
+        a {color: #007B9A;}
+
+    </style>
+
+    <script>
+
+        $('document').ready(initialise);
+        function initialise() {
+            $(document).on('change', 'select', function() {
+                update();
+                // if you want to do stuff based on the OPTION element:
+                //var opt = $(this).find('option:selected')[0];
+            });
+            update();
+        }
+
+        /* Call this function whenever there is a state change */
+        function update() {
+            /*
+            In all of the following variable names, if there is a prefix of [fair], it stands for
+            Findable, Accessible, Interoperable and Reusable respectively.  For example, fscore refers
+            to the score for 'Findable'.
+
+             The prefix q is for question, so, for example, '#q1' is a reference to question 1.
+            */
+            /* If there is no identifier in the dataset, then the following question must default to no */
+
+            if (parseInt($("#q1").val()) === 0) {
+                $("#q2").val(0);
+                $("#q2").enabled = false;
+            }
+
+            var fscore = parseInt($("#q1").val()) + parseInt($("#q2").val()) +
+                    parseInt($("#q3").val()) + parseInt($("#q4").val());
+
+
+            $("#fbar").attr('style', "width: " +  (fscore / 17.0) * 100 + "%");
+            // $("#fscore").html(fscore);
+            $("#fstars").html(createStars(fscore/17.0 * 5));
+
+
+            var ascore = parseInt($("#q5").val()) + parseInt($("#q6").val()) +
+                    parseInt($("#q7").val());
+            $("#abar").attr('style', "width: " +  (ascore / 10.0) * 100 + "%");
+            // $("#ascore").html(ascore);
+            $("#astars").html(createStars(ascore/10.0 * 5));
+
+            var iscore = parseInt($("#q8").val()) + parseInt($("#q9").val()) +
+                    parseInt($("#q10").val());
+            $("#ibar").attr('style', "width: " +  (iscore / 8.0) * 100 + "%");
+            // $("#iscore").html(iscore);
+            $("#istars").html(createStars(iscore/8.0 * 5));
+
+            var rscore = parseInt($("#q11").val()) + parseInt($("#q12").val());
+            $("#rbar").attr('style', "width: " +  (rscore / 7.0) * 100 + "%");
+            // $("#rscore").html(rscore);
+            $("#rstars").html(createStars(rscore/7.0 * 5));
+
+            var tscore = fscore / 17 + ascore / 10.0 + iscore / 8.0 + rscore / 6.0;
+            $("#tbar").attr('style', "width: " +  tscore * 25.0 + "%");
+            console.log(tscore)
+            $("#tstars").html(createStars(tscore/4.0 * 5));
+
+            $("#q1_answer").html('<i>' + $("#q1 option:selected").text() + '</i>');
+            $("#q1_score").html($("#q1").val());
+
+            $("#q2_answer").html('<i>' + $("#q2 option:selected").text() + '</i>');
+            $("#q2_score").html($("#q2").val());
+
+            $("#q3_answer").html('<i>' + $("#q3 option:selected").text() + '</i>');
+            $("#q3_score").html($("#q3").val());
+
+            $("#q4_answer").html('<i>' + $("#q4 option:selected").text() + '</i>');
+            $("#q4_score").html($("#q4").val());
+
+            $("#f_total").html(fscore);
+
+            $("#q5_answer").html('<i>' + $("#q5 option:selected").text() + '</i>');
+            $("#q5_score").html($("#q5").val());
+
+            $("#q6_answer").html('<i>' + $("#q6 option:selected").text() + '</i>');
+            $("#q6_score").html($("#q6").val());
+
+            $("#q7_answer").html('<i>' + $("#q7 option:selected").text() + '</i>');
+            $("#7_score").html($("#q7").val());
+
+            $("#a_total").html(ascore);
+
+            $("#q8_answer").html('<i>' + $("#q8 option:selected").text() + '</i>');
+            $("#q8_score").html($("#q8").val());
+            $("#q9_answer").html('<i>' + $("#q9 option:selected").text() + '</i>');
+            $("#q9_score").html($("#q9").val());
+            $("#q10_answer").html('<i>' + $("#q10 option:selected").text() + '</i>');
+            $("#q10_score").html($("#q10").val());
+            $("#i_total").html(iscore);
+
+            $("#q11_answer").html('<i>' + $("#q11 option:selected").text() + '</i>');
+            $("#q11_score").html($("#q11").val());
+            $("#q12_answer").html('<i>' + $("#q12 option:selected").text() + '</i>');
+            $("#q12_score").html($("#q12").val());
+            $("#r_total").html(rscore);
+
+
+        }
+
+        // Given a score, create the html to display the stars
+        // Score should be a value between 0 and 5
+        function createStars(score) {
+            var blank = '<span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>';
+            var filled = '<span class="glyphicon glyphicon-star" aria-hidden="true"></span>';
+            var html = "";
+            var i = 0;
+            score = Math.floor(score);
+
+            while (i < 5) {
+                if (score > i) {
+                    html += filled;
+                } else {
+                    html += blank;
+                }
+                i += 1;
+            }
+            return html;
+        }
+    </script>
+
+</head>
+
+<body>
+
+<div class="container">
+ <h1>Jsou vaše data FAIR?</h1>
+    <p>Vítejte v nástroji pro sebehodnocení úrovně principů FAIR Data, který byl původně vytvořen v <a href="https://ardc.edu.au/resource/fair-data-self-assessment-tool/" target="_blank">ARDC</a>. 
+	Pomocí tohoto nástroje budete moci posoudit "FAIRovost" datové sady a určit, jak její FAIRovost zvýšit (pokud je to vhodné).
+</p><p>
+    Tento nástroj pro sebehodnocení byl navržen převážně pro datové knihovníky a pracovníky IT, ale mohou jej používat i softwaroví inženýři vyvíjející nástroje a služby FAIR Data a výzkumní pracovníci za předpokladu, že jim pomáhají pracovníci podpory výzkumu.
+</p><p>
+Budou vám položeny otázky týkající se zásad, na nichž jsou založeny principy Findable, Accessible, Interoperable a Reusable. Po zodpovězení všech otázek v každé části se vám na základě vašich odpovědí v dané části zobrazí ukazatel "zeleného pruhu" a po vyplnění všech částí se zobrazí celkový ukazatel "FAIRness".
+</p><p>
+Upozorňujeme, že v nástroji jsou uvedeny další vysvětlující informace. Informační tlačítko (i) poskytuje přehled o každém z prvků FAIR na vysoké úrovni (Findable, Accessible, Interoperable a Reusable). Kromě toho je každá otázka opatřena hypertextovým odkazem, který uživatele vede k vysvětlujícím informacím a odkazům na širší zdroje o souvisejících tématech.
+</p>
+    <div class="bs-example">
+        <div class="panel-group" id="accordion">
+
+            <!-- Findable -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapseOne">Findable - nalezitelná</a>
+                        <a href="#fhelp" data-toggle="modal" data-target="#findable_info">
+                        <span class="pull-right glyphicon glyphicon-info-sign"  aria-hidden="true">
+                        </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group row">
+                                <label for="q1" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q1">
+                                    Má datová sada přiřazeny nějaké identifikátory?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q1">
+                                        <option value="8">Globálně jedinečné, citovatelné a trvalé (např. DOI, PURL, ARK nebo Handle)
+                                        </option>
+                                        <option value="3">Webovou adresu (URL)</option>
+                                        <option value="1">Místní identifikátor</option>
+                                        <option value="0" selected="selected">Nemá žádné identifikátory</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="q2" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q2">
+                                    Je identifikátor datové sady zahrnut u všech metadatových záznamů nebo souborů popisujících data?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q2">
+                                        <option value="1">Ano</option>
+                                        <option value="0" selected="selected">Ne</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="q3" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q3">
+                                    Jak jsou data popsána pomocí metadat?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q3">
+                                        <option value="4">Komplexně (viz návrh) s použitím uznávaného formálního strojově čitelného schématu metadat.
+                                        </option>
+                                        <option value="3">Komplexně, ale v nestandardním textovém formátu.
+                                        </option>
+                                        <option value="2">Stručný název a popis</option>
+                                        <option value="0" selected="selected">Data nejsou popsána</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="q4" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q4">
+                                    V jakém typu úložiště nebo registru se záznam metadat nachází?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q4">
+                                        <option value="4">Data jsou na jednom místě, ale lze je zjistit z několika registrů.</option>
+                                        <option value="2">Obecný veřejný repozitář</option>
+                                        <option value="2">Oborový repozitář</option>
+                                        <option value="2">Místní institucionální repozitář</option>
+                                        <option value="0" selected="selected">
+                                            Data nejsou popsána v žádném repozitáři
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="w3-border">
+                        <div id="fbar" class="w3-container w3-padding w3-green" style="width:0;">
+                            <div class="w3-center" id="demo"></div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Accessible -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapseTwo">Accessible - přístupná</a>
+                        <a href="#" data-toggle="modal" data-target="#accessible_info">
+                        <span class="pull-right glyphicon glyphicon-info-sign"  aria-hidden="true">
+                        </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <form>
+
+                            <div class="form-group row">
+                                <label for="q5" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q5">
+                                    Jak jsou data dostupná?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q5">
+                                        <option value="5">Veřejně přístupná</option>
+                                        <option value="5">
+                                            Plně přístupné osobám, které splňují výslovně stanovené podmínky, např. etické schválení pro citlivé údaje.
+                                        </option>
+                                        <option value="4">Deidentifikovaná / upravená podmnožina údajů je veřejně přístupná.
+                                        </option>
+                                        <option value="3">Přístup zakázán po určitém datu</option>
+                                        <option value="2">Neurčený podmíněný přístup, např. je nutné kontaktovat správce údajů pro přístup.</option>
+                                        <option value="1">Přístup pouze k metadatům</option>
+                                        <option value="0" selected="selected">Žádný přístup k datům nebo metadatům</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                <label for="q6" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q6">
+                                    Jsou data dostupná online, aniž by vyžadovala specializované protokoly nebo nástroje po schválení přístupu?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q6">
+                                        <option value="4">Standardní rozhraní API webových služeb (např. OGC)</option>
+                                        <option value="3">Nestandardní webová služba (např. OpenAPI/Swagger/neformální API).
+                                        </option>
+                                        <option value="2">Stažení souboru z online umístění</option>
+                                        <option value="1">Po individuální dohodě</option>
+                                        <option value="0" selected="selected">Žádný přístup k datům</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                <label for="q7" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q7">
+                                    Bude záznam metadat k dispozici i v případě, že data nebudou k dispozici?
+                                        </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q7">
+                                        <option value="1">Ano</option>
+                                        <option value="0">Ne</option>
+                                        <option value="0" selected="selected">Není jisté</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                        </form>
+                        <div class="w3-border">
+                            <div id="abar" class="w3-container w3-padding w3-green" style="width:1%">
+                                <div class="w3-center" id="idemo"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interoperable -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapseThree">Interoperable - interoperabilní</a>
+                        <a href="#" data-toggle="modal" data-target="#interoperable_info">
+                        <span class="pull-right glyphicon glyphicon-info-sign"  aria-hidden="true">
+                        </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse">
+                    <div class="panel-body">
+
+                        <form>
+                            <div class="form-group row">
+
+                                <label for="q8" class="col-sm-6 col-form-label">
+                                    <a href="#reusable_info" data-toggle="modal" data-target="#info_q8">
+                                        V jakém (souborovém) formátu jsou data k dispozici?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q8">
+                                        <option value="2">ve strukturovaném, strojově čitelném formátu podle otevřeného standardu.</option>
+                                        <option value="1">ve strukturovaném, standardním, strojově nečitelném formátu.</option>
+                                        <option value="0" selected="selected">Většinou v proprietárním formátu</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="q9" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q9">
+                                    Co nejlépe vystihuje typy slovníků/ontologií/metadatových schémat, které se používají pro definovat datové prvky?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q9">
+                                        <option value="3">Standardizované otevřené a univerzální s použitím rozlišitelných globálních identifikátorů odkazujících na vysvětlení.
+                                        </option>
+                                        <option value="2">Standardizované slovníky/ontologie/schémata bez globálních identifikátorů</option>
+                                        <option value="1">Při popisu datových prvků nebyly použity žádné standardy.</option>
+                                        <option value="0" selected="selected">Datové prvky nejsou popsány</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                <label for="q10" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q10">
+                                        Jak jsou metadata propojena s ostatními daty a metadaty (pro zlepšení kontextu a jasné vyznačení vztahů)?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q10">
+                                        <option value="3">
+                                            Metadata jsou reprezentována ve strojově čitelném formátu, např. ve formátu propojených dat, jako je RDF (Resource Description Framework).
+                                        </option>
+                                        <option value="2">Metadatový záznam obsahuje odkazy URI na související metadata, data a definice
+                                        </option>
+                                        <option value="0" selected="selected">Neexistují žádné odkazy na další metadata</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Question removed...
+                            <div class="form-group row">
+                                <label for="q11" class="col-sm-6 col-form-label">
+                                    Does the metadata state how you wish your data to be cited?
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q11">
+                                        <option value="1">Yes</option>
+                                        <option value="0" selected="selected">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            -->
+
+                        </form>
+                        <div class="w3-border">
+                            <div id="ibar" class="w3-container w3-padding w3-green" style="width:1%">
+                                <div class="w3-center" id="iidemo"></div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reusable -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapseFour">Reusable - znovuvyužitelná</a>
+                        <a href="#fhelp" data-toggle="modal" data-target="#reusable_info">
+                        <span class="pull-right glyphicon glyphicon-info-sign"  aria-hidden="true">
+                        </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseFour" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group row">
+                                <label for="q11" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q11">
+                                    Která z následujících možností nejlépe vystihuje licence/uživatelská práva spojená s daty?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q11">
+                                        <option value="4">Standardní strojově čitelná licence (např. Creative Commons)</option>
+                                        <option value="3">Standardní textová licence</option>
+                                        <option value="3">Nestandardní strojově čitelná licence (jasně určující, za jakých podmínek mohou být data znovu použita)
+                                        </option>
+                                        <option value="2">Nestandardní textová licence</option>
+                                        <option value="0" selected="selected">Bez licence</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                <label for="q12" class="col-sm-6 col-form-label">
+                                    <a href="#" data-toggle="modal" data-target="#info_q12">
+                                        Kolik informací o původu bylo zachyceno, aby se usnadnilo opakované použití dat?
+                                    </a>
+                                </label>
+
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="q12">
+                                        <option value="3">Kompletní záznam ve strojově čitelném formátu</option>
+                                        <option value="2">Kompletní záznam v textovém formátu</option>
+                                        <option value="1">Částečně zaznamenáno</option>
+                                        <option value="0" selected="selected">Nejsou zaznamenány žádné informace o původu</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                        </form>
+                        <div class="w3-border">
+                            <div id="rbar" class="w3-container w3-padding w3-green" style="width:1%">
+                                <div class="w3-center" id="rdemo"></div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>Celkem napříč F.A.I.R</h4>
+
+        <div class="w3-border">
+            <div id="tbar" class="w3-container w3-padding w3-green" style="width:0%">
+                <div class="w3-center" id="tdemo"></div>
+            </div>
+        </div>
+        <br>
+        <p>
+        Chcete-li se dozvědět více o tom, jak zvýšit FAIR kvalitu svých dat, navštivte: <a href="https://www.ands.org.au/fair">www.ands.org.au/fair</a>
+        </p>
+        <p><strong>Poznámka:</strong> Kliknutím na odkaz v záhlaví rozbalíte nebo sbalíte seznam otázek.</p>
+
+        <b>Upozornění k tomuto nástroji:</b> Nástroj pro sebehodnocení údajů <a href=https://ardc.edu.au/resource/fair-data-self-assessment-tool/" target=_blank">ARDC FAIR</a>
+		byl vyvinut organizací <a href="https://ardc.edu.au/" target="_blank">Australian Research Data Commons (ARDC)</a>. Je poskytován výhradně pro vzdělávací a informační účely. Je založen na interpretaci zásad
+        <a href="https://www.force11.org/group/fairgroup/fairprinciples"
+           target="_blank">FAIR Data principů</a> s vědomím, že existují i jiné výklady těchto zásad.
+        Podívejte se prosím také na další nástroje, jako je <a href="https://doi.org/10.4225/08/5a12348f8567b" target="_blank">
+        CSIRO 5 star data rating tool</a> a také  <a href="https://www.surveymonkey.com/r/fairdat" target="_blank">
+        DANS FAIRdat tool</a>, které poskytly cennou inspiraci při vývoji tohoto nástroje.
+        DANS FAIRdat tool</a>, které poskytly cennou inspiraci při vývoji tohoto nástroje.
+        <p>
+        Bodové hodnocení vyplývající z tohoto nástroje je určeno pouze pro účely vlastního hodnocení a jako podnět k zamyšlení a diskusi o možných způsobech, jak data učinit více FAIR.</p>
+		<p>Tento nástroj je šířen pod licencí <a href="https://github.com/au-research/FAIR-Data-Assessment-Tool/blob/main/LICENCE.md" target="_blank">GNU GPLv3</a> a je dostupný na <a href="https://github.com/au-research/FAIR-Data-Assessment-Tool" target="_blank">GitHubu</a>. Přeloženo v <a href="https://www.vut.cz/uk" target=_blank">Ústřední knihovně VUT</a> v roce 2023.</p>
+    </div>
+
+</div>
+
+
+<!-- Trigger the modal with a button
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+-->
+
+<!-- Modal -->
+<div id="findable_info" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O nalezitelnosti</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Zajištění nalezitelnosti dat zahrnuje přiřazení 
+                    <a href="https://www.ands.org.au/guides/persistent-identifiers-awareness" target="_blank">
+                    trvalého identifikátoru</a> (jako <a href="https://www.ands.org.au/guides/doi" target="_blank">DOI</a>
+                    nebo <a href="https://www.ands.org.au/guides/identify-my-data" target="_blank">Handle </a>),
+                    bohatých <a href="https://www.ands.org.au/working-with-data/metadata" target="_blank">metadat</a>
+                    popisujících data a zajištění jejich nalezitelnosti prostřednictvím 
+					oborových a obecných vyhledávacích portálů (místních i mezinárodních).
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="accessible_info" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O přístupnosti</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <a href="https://www.ands.org.au/working-with-data/publishing-and-reusing-data/publishing"
+                       target="_blank">
+                        Zpřístupnění dat</a> může zahrnovat  
+                    <a href="https://www.ands.org.au/working-with-data/articulating-the-value-of-open-data/open-data"
+                       target="_blank">
+                        zpřístupnění</a> dat pomocí standardizovaného protokolu.
+                    Data však nemusí být nutně otevřená. Někdy existují pádné důvody, proč 
+					<a href="https://www.ands.org.au/working-with-data/sensitive-data" target="_blank">
+                    data zpřístupnit nelze</a>, například obavy o soukromí, národní bezpečnost nebo obchodní zájmy. 
+					Pokud data otevřená nejsou, měly by být jasně a transparentně stanoveny podmínky, jimiž se řídí přístup a 
+                    <a href="https://www.ands.org.au/working-with-data/publishing-and-reusing-data/licensing-for-reuse"
+                                            target="_blank">opakované použití</a>.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="interoperable_info" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O interoperabilitě</h4>
+            </div>
+            <div class="modal-body">
+
+                Aby byla data interoperabilní (tj. data, která lze interpretovat 
+				počítačem, takže je lze automaticky kombinovat s jinými daty), 
+				budou muset používat  <a href="https://www.ands.org.au/guides/file-formats" target="_blank">formáty</a>,
+                jazyk a <a href="https://www.ands.org.au/guides/vocabularies-and-research-data" target="_blank">
+                slovníky</a> dohodnuté v rámci komunity. <a href="https://www.ands.org.au/working-with-data/metadata">Metadata</a>
+                musí rovněž používat standardy a slovníky dohodnuté v rámci 
+				komunity a obsahovat odkazy na související informace pomocí <a href="https://www.ands.org.au/working-with-data/citation-and-identifiers"
+                    target="_blank">identifikátorů</a>.
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="reusable_info" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O opakovaném použití</h4>
+            </div>
+            <div class="modal-body">
+
+                Opakovaně použitelná data by si měla zachovat svou původní bohatost. 
+				Například by neměla být zkracována za účelem vysvětlení zjištění 
+				v jedné konkrétní publikaci. Potřebuje jasnou strojově čitelnou
+                <a href="http://www.ands.org.au/working-with-data/publishing-and-reusing-data/licensing-for-reuse"
+                   target="_blank">licenci</a>
+                a <a href="https://www.ands.org.au/partners-and-communities/ands-communities/data-provenance-interest-group"
+                       target="_blank">informace o původu</a>, jak data vznikla. Měla by také využívat 
+					   oborově specifické datové a <a href="https://www.ands.org.au/working-with-data/metadata"
+                                                target="_blank"> metadatové</a> standardy, aby získala bohaté 
+												kontextové informace, které umožní přesnou interpretaci a opakované použití.
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_q1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O identifikátorech</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                Identifikátory jsou nezbytné pro identifikaci, vyhledávání, vyhledávání, propojování 
+				a citování souborů dat. Webovou adresu (URL) lze použít k určení online umístění zdroje, 
+				ale v průběhu času se adresy URL obvykle mění, což vede k nefunkčním odkazům na data.  
+				Aby byly identifikátory užitečné, musí být trvalé a jedinečné. Identifikátory 
+				digitálních objektů (DOI) a další trvalé identifikátory (PID) poskytují 
+				trvalý citovatelný odkaz na konkrétní datovou sadu.  DOI je trvalý pevný 
+				odkaz na dataset bez ohledu na to, kde je umístěn online, a umožňuje citování a citační metriky.
+                </p><p>
+                Služby pro vytvoření trvalého identifikátoru často nabízí vaše přidružená instituce
+				nebo úložiště, které používáte k popisu svých dat. Další informace získáte ve své knihovně.
+                </p><p>
+                Přečtěte si více: <a href="https://www.ands.org.au/working-with-data/citation-and-identifiers" target="_blank">
+                Persistentní identifikátory</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="info_q2" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O identifikátorech</h4>
+            </div>
+            <div class="modal-body">
+                <p>Identifikátor (nejlépe trvalý) musí být jasně uveden v metadatovém záznamu 
+				popisujícím sbírku dat a také ve všech souvisejících datových souborech nebo metadatech.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_q3" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O popisech metadat</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Komplexní metadatové záznamy budou obsahovat popisný obsah, 
+					který usnadní vyhledávání, přístup a opakované použití popisovaných dat. 
+					Ačkoli neexistuje žádný univerzální seznam, komplexní metadata by měla obsahovat:
+                    <ul>
+                        <li>globálně jedinečný trvalý identifikátor, např. DOI</li>
+                        <li>název</li>
+                        <li>související osoby, tj. tvůrce nebo správce dat</li>
+                        <li>jak přistupovat k datům a formátům souborů</li>
+                        <li>popis toho, jak byla data vytvořena a jak interpretovat předmět dat nebo klíčová slova</li>
+                        <li>informace o citacích, které jasně uvádějí, jak mají být údaje citovány</li>
+                        <li>strojově čitelná datová licence</li>
+                        <li>původ a kontextové informace, jako jsou:</li>
+                        <ul>
+                            <li>odkazy na související publikace, projekty, služby a software.</li>
+                            <li>metodika a procesy spojené s tvorbou dat</li>
+                        </ul>
+                        <li>prostorové a časové pokrytí (je-li relevantní)</li>
+                        <li>popis dat na úrovni objektu</li>
+                    </ul>
+                    Poskytování metadat ve standardním schématu umožňuje, aby je četly a používaly stroje i lidé.
+                <p>
+                    Přečtěte si více: <a href="https://www.ands.org.au/working-with-data/metadata" target="_blank">
+                    Metadata</a>
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="info_q4" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O metadatových repozitářích</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Bohatý popis metadat sám o sobě nezajišťuje "nalezitelnost" datové sady na internetu; datová sada musí být zaregistrována nebo indexována ve vyhledávacím zdroji, jako je například univerzální vyhledávač.
+                    (např. <a href="https://figshare.com" target="_blank">Figshare</a>,
+                    <a href="http://datadryad.org" target="_blank">Dryad</a>,
+                    <a href="https://zenodo.org" target="_blank">Zenodo</a>
+                    oborově specifický (např.
+                    <a href="https://pangaea.de" target="_blank">PANGAEA</a>,
+                    <a href="https://ada.edu.au" target="_blank">ADA</a>,
+                    <a href="https://www.icpsr.umich.edu" target="_blank">ICPSR</a>), nebo institucionální
+                    (např. <a href="https://openresearch-repository.anu.edu.au" target="_blank">ANU Research Repository</a> ,
+                      <a href="https://ses.library.usyd.edu.au" target="_blank">Sydney eScholarship Repository</a>,
+                    <a href="https://data.gov.au" target="_blank">data.gov.au</a>) datový repozitář  nebo registr. V ideálním případě jsou tato úložiště/registry indexovány vyhledávači, jako je Google a/nebo Google Scholar.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div id="info_q5" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O přístupnosti dat</h4>
+            </div>
+            <div class="modal-body">
+
+                Ne všechna data, která lze zjistit, jsou volně přístupná. Často jsou na ně uvalena embarga, a přístupová oprávnění spojená s daty kvůli různým problémům. jako jsou ochrana soukromí a obchodní zájmy.
+
+                I přes všechny tyto problémy lze sdílet mnoho <a href="https://www.ands.org.au/working-with-data/sensitive-data"
+                                                  target="_blank"> citlivých údajů </a>. Mnoho dalších problémů, které by mohly být vnímány jako překážky sdílení dat, lze
+                <a href="http://datapub.cdlib.org/closed-data-excuses-excuses" target="_blank">překonat</a>.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_q6" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O protokolech</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    V ideálním případě by uživatelé chtěli získat příslušný internetový obsah přímo a bez překážek, jakmile našli. Internetové protokoly (např. http a ftp) definují pravidla a zvyklosti pro komunikaci mezi zařízeními a k dispozici jsou nástroje a služby, které tento proces usnadňují, např. rozhraní API.
+                </p>
+
+                <p>Protokoly</p>
+                <p>
+                <a href="https://www.lifewire.com/hypertext-transfer-protocol-817944" target="_blank">
+                    HTTP</a> (Hypertext Transfer Protocol) is the set of rules for transferring files (text, graphic
+                    images, sound, video, and other multimedia files) on the
+                    <a href="http://searchcrm.techtarget.com/definition/World-Wide-Web" target="_blank">
+                    World Wide Web</a>. As soon as a Web
+                    user opens their Web browser, the user is indirectly making use of HTTP.</p>
+
+                <a href="https://www.lifewire.com/file-transfer-protocol-817943" target="_blank">
+                    FTP</a> (File Transfer Protocol) is a standard Internet
+                <a href="http://searchnetworking.techtarget.com/definition/protocol">protocol</a> for transmitting
+                files between computers on the Internet over TCP/IP connections.
+
+                Read more: <a href="https://www.lifewire.com/definition-of-protocol-network-817949" target="_blank">
+                Web protocols</a>
+
+                <p>
+                    API (Application Programming Interface): Když jsou informace zpřístupněny 
+					v jakémkoli stroji. čitelném formátu, je možné tyto informace přímo zpřístupnit programům, 
+					které je používají. které si tyto informace vyžádají prostřednictvím webu.  
+					Rozhraní API je způsob, jakým se tyto informace přímo k dispozici ostatním strojům.
+                </p><p>
+                Zobrazit více: <a href="https://youtu.be/s7wmiS2mSXY" target="_blank">Co je API?</a>
+                </p>
+                <p>
+                    OGC - <a href="http://www.opengeospatial.org/ogc" target="_blank">http://www.opengeospatial.org/ogc</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_q7" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O dostupnosti metadat</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Často je nutné vynaložit úsilí na udržování datových zdrojů online, 
+					což může často vést k tomu, že se tyto zdroje zanedbávat, zejména 
+					po dlouhou dobu.  To často vede k nefunkčním odkazům mezi metadaty a daty.  
+					Mít k dispozici alespoň popis dat ve formě metadatového záznamu znamená, 
+					že existuje záznam o existenci dat, který umožňuje, aby se data že je někdo může dohledat.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<div id="info_q8" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O formátech souborů</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Při výběru formátů souborů pro archivaci by se v ideálním případě mělo jednat o tyto formáty::
+                    <ul>
+                    <li>Neproprietární
+                    <li>Nešifrované
+                    <li>nekompresované
+                    <li>Běžně používané ve výzkumné komunitě
+                    <li>Dodržování otevřeného a zdokumentovaného standardu, například standardu popsaného státem Kalifornie. (viz
+                        <a href="http://www.leginfo.ca.gov/pub/07-08/bill/asm/ab_1651-1700/ab_1668_bill_20070524_amended_asm_v96.pdf"
+                           target="_blank">AB 1668, 2007</a>)
+                    <ul>
+                    <li>Interoperabilní mezi různými platformami a aplikacemi
+                    <li>Plně publikované a dostupné bez licenčních poplatků
+                    <li>Plně a nezávisle implementovatelné více poskytovateli softwaru na různých platformách 
+					bez jakýchkoli omezení duševního vlastnictví potřebné technologie.
+                    <li>Vyvíjí a udržuje je organizace pro otevřené standardy s dobře definovaným procesem vývoje standardu.
+                    </ul>
+                    </ul>
+
+                <p style="text-indent: 25px;">
+                Z: <a href="https://library.stanford.edu/research/data-management-services/data-best-practices/best-practices-file-formats"
+                   target="_blank">Stanford University Library - Osvědčené postupy pro formáty souborů</a>
+                </p><p>
+                Příklady formátů souborů:
+                <ul>
+                    <li> Strukturovaný, otevřený standardní, strojově čitelný formát, např. (text) PDF/A, HTML, Plain text, (obraz) TIFF, JPEG 2000, GIF, (audio) MP3, AIFF, WAVE, (video) MOV, MPEG, AVI, (Tabular data) CSV
+                    <li> strukturovaný, otevřený standardní, strojově nečitelný formát, např. PDF, HTML, JPG
+                    <li> Proprietarní formát, např. doc (Word), .xls (Excel), .ppt (PowerPoint), .sav
+                    </li>
+                </ul>
+
+                Přečtěte si více:
+                <ul style="list-style-type: none;">
+                    <li><a href="https://www.ands.org.au/__data/assets/pdf_file/0003/731775/File-Formats.pdf" target="_blank">ANDS</a></li>
+                    <li><a href="https://www.europeandataportal.eu/elearning/en/module9/#/id/co-01" target="_blank">
+                     European Data Portal</a></li>
+                </ul>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="info_q9" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O metadatových standardech</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Metadatové standardy jsou schémata, která prošla formálním procesem 
+					validace ze strany standardizačních organizací. jako je Mezinárodní organizace pro normalizaci (ISO) 
+					nebo ekvivalentní orgán, jako je např. Dublin Core Metadata Initiative (DCMI); nebo běžně používaná a důsledně uplatňovaná metadatová
+					schémata, která jsou dobře zdokumentována, schválena a udržována, se mohou rovněž stát "de facto standardy", 
+					např. RIF-CS pro popis datových sbírek a služeb používaných v Research Data Australia.
+                </p>
+
+                    Přečtěte si více: <a href="http://www.ands.org.au/guides/metadata-working" target="_blank">Metadatové schema</a>
+                <p>
+                    Standardizovaná otevřená a univerzální schémata, např.:
+                    <a href="http://www.dcc.ac.uk/resources/metadata-standards/datacite-metadata-schema" target="_blank"> DataCite Metadata Schema</a>,
+                    <a href="http://www.dcc.ac.uk/resources/metadata-standards/prov" target="_blank"> PROV</a>,
+                    <a href="http://www.dcc.ac.uk/resources/metadata-standards/dublin-core" target="_blank">Dublin Core</a>
+                </p>
+                    <p>
+                    Doménově specifické standardy, např. .<a href="http://human-phenotype-ontology.github.io/" target="_blank">
+                        HPO - Human Phenotype Ontology</a>,
+                        <a href="https://www.nlm.nih.gov/mesh/" target="_blank">MeSH - Medical Subject Headings </a>,
+                        <a href="http://mcp-profile-docs.readthedocs.io/en/stable/" target="_blank">Marine Community Profile</a>,
+                        <a href="http://www.ddialliance.org/" target="_blank">DDI - Data Documentation Initiative</a>
+
+                    Pro <a href="http://rd-alliance.github.io/metadata-directory/" target="_blank">více ukázek standardů...</a>
+                    </p><p>
+                    Řešitelné globální identifikátory - Identifikátor je jakákoli značka používaná 
+					k jednoznačnému pojmenování něčeho (ať už online nebo offline). Příkladem 
+					identifikátoru jsou adresy URL. Stejně tak sériová čísla a osobní jména. 
+					U trvalého identifikátoru je zaručena správa a aktualizace po definovanou dobu.
+                </p><p>
+                Přečtěte si více: <a href="http://www.ands.org.au/guides/persistent-identifiers-awareness" target="_blank">
+                Persistentní identifikátory</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_q10" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O metadatových odkazech</h4>
+            </div>
+            <div class="modal-body">
+                <p>Cílem je vytvořit co nejvíce smysluplných vazeb mezi (meta)datovými zdroji, aby se obohatily kontextové znalosti o datech, a to v rovnováze s časem/energií potřebnou k vytvoření dobrého datového modelu.
+
+                    <h4>Strojově čitelná (meta)data</h4>
+
+                    (Meta)data ve formátu, který lze automaticky číst a zpracovávat počítačem, např.
+                    <a href="http://opendatahandbook.org/glossary/en/terms/csv/" target="_blank">CSV</a>,
+                    <a href="http://opendatahandbook.org/glossary/en/terms/json/" target="_blank">JSON</a>,
+                    <a href="http://opendatahandbook.org/glossary/en/terms/xml/" target="_blank">XML</a> atd.
+
+                    Další informace: <a href="http://opendatahandbook.org/glossary/en/terms/machine-readable/">
+                    Open Data Handbook</a>
+
+                    <h4>Propojená data (Linked Data)</h4>
+                    Propojená data (známá také jako Linked nebo Linking Data) lze použít 
+					ke zlepšení využití "webu dat". Tento výraz označuje 
+					publikování strukturovaných dat tak, že se mezi daty 
+					z různých zdrojů vytvářejí typizované odkazy, které zajišťují 
+					vyšší úroveň využitelnosti. Pomocí propojených dat je možné vyhledávat další, 
+					související data. Strukturovaná data by měla splňovat čtyři požadavky, aby mohla být nazývána propojenými daty:
+                    <ul>
+                    <li>URI by měly být přiřazeny všem entitám datové sady.
+                    <li>URI HTTP jsou vyžadovány, aby bylo zajištěno, že uživatelé a uživatelští agenti mohou odkazovat na všechny entity a citovat je.
+                    <li>Entity by měly být popsány pomocí standardních formátů, například RDF/XML.
+                    <li>Měly by být vytvořeny odkazy na další související URI entit.</li>
+                    </ul>
+
+                    Všechna data, která splňují tyto požadavky a jsou zveřejněna, se nazývají propojená otevřená data (Linked Open Data, LOD).
+                    http://www.lesliesikos.com/semantic-web-machine-readable-structured-data-with-meaningful-annotations/
+                    <p>
+                    Více informací pod nadpisem (meta)data obsahují kvalifikované odkazy na další (meta)data v následujícím zdroji:
+                    https://www.dtls.nl/fair-data/fair-principles-explained/
+                    <br>
+                    Další informace o standardech propojených dat -
+                    RDF - https://www.w3.org/RDF/
+                    <br>
+                    Další související standardy propojených dat:
+                    OWL - https://www.w3.org/OWL/ , SKOS - https://www.w3.org/2004/02/skos/ , SPARQL - https://www.w3.org/TR/rdf-sparql-query/
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_q11" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O licencích</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Pokud nejsou data licencována, nikdo jiný je nemůže použít. V Austrálii je absence licence 
+					považována za totéž co "všechna práva vyhrazena", což omezuje jakékoli opakované použití 
+					na velmi omezené okolnosti. Použití licence Creative Commons na vaše data je jednoduchý způsob,
+					jak zajistit, aby vaše data mohla být znovu použita. Čím méně omezující je licence, tím více lze s daty dělat.
+                <p>
+                    Aby bylo možné na webu snadno zjistit, kdy je dílo dostupné pod určitou licencí, poskytuje "strojově čitelná"
+					verze licence souhrn klíčových svobod a povinností ve formátu srozumitelném softwarovým systémům, vyhledávačům
+					a dalším druhům technologií.
+
+                <p>
+                    Příklad z <a href="https://creativecommons.org/choose/" target="_blank">
+                    Creative Commons License Chooser </a>:
+                </p><p>
+                    Co se zobrazuje v metadatech:
+                </p><p>
+
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    <img alt="Creative Commons License" style="border-width:0"
+                         src="https://i.creativecommons.org/l/by/4.0/88x31.png"/>
+                </a><br />This work is licensed under a
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License</a>.
+                   </p><p>
+                    Úryvek kódu:
+                </p>
+
+ <pre>
+&lt;a rel="license" href="http://creativecommons.org/licenses/by/4.0/"&gt;
+&lt;img alt="Creative Commons License" style="border-width:0"
+src="https://i.creativecommons.org/l/by/4.0/88x31.png"/&gt;
+&lt;/a&gt;&lt;br /&gt;This work is licensed under a
+&lt;a rel="license" href="http://creativecommons.org/licenses/by/4.0/"&gt;
+Creative Commons Attribution 4.0 International License&lt;/a&gt;.
+</pre>
+
+                    Přečtěte si více:
+                    https://www.ands.org.au/working-with-data/publishing-and-reusing-data/licensing-for-reuse
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="info_q12" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O původu dat</h4>
+            </div>
+            <div class="modal-body">
+                <p>Původ dat slouží k dokumentaci toho, odkud data pocházejí, 
+				a procesu a metodiky, podle které byla vytvořena. Je důležitá pro p
+				otvrzení pravosti dat, což umožňuje jejich důvěryhodnost, věrohodnost a reprodukovatelnost. 
+				To je stále důležitější, zejména v komunitě elektronických věd, 
+				kde je výzkum náročný na data a často zahrnuje složité transformace dat a postupy. 
+                    <a href="https://www.ands.org.au/partners-and-communities/ands-communities/data-provenance-interest-group"
+                            target="_blank">
+                        Přečtěte si více...</a>
+                    Slovníky původu, jako např. <a href="https://www.w3.org/2005/Incubator/prov/XGR-prov-20101214/#Recommendations"
+                            target="_blank">
+                        Provenir Ontology (PROV-O) and others</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_fscore" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">O skóre Findable</h4>
+            </div>
+            <div class="modal-body">
+                <p><b>Skóre bylo odvozeno následovně:</b></p>
+
+                    Má datová sada přiřazeny nějaké identifikátory:
+                    <br>
+                    Odpověděli jste <span id="q1_answer"></span>, což vám dalo <span id="q1_score"></span> z možných 8 bodů.
+                    <br/>
+                <p>
+                     Is the dataset identifier included in all mdetadata records:
+                        <br>
+                    Odpověděli jste <span id="q2_answer"></span>, což vám dalo <span id="q2_score"></span> z možného 1 bodu.
+                            <br>
+                </p><p>
+                    How is the data described with metadata:
+                            <br>
+Odpověděli jste <span id="q3_answer"></span>, což vám dalo <span id="q3_score"></span> z možných 4 bodů.
+
+                                <br>
+            </p><p>
+                   What type of repository or registry is the metadata record in:
+                                <br>
+Odpověděli jste <span id="q4_answer"></span>, což vám dalo <span id="q4_score"></span> z možných 4 bodů.
+            </p><p>
+                This gives you <span id="f_total"></span> out of a possible 17 points.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="info_ascore" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">About Findable Score</h4>
+            </div>
+            <div class="modal-body">
+                <p><b>The score was derived as follows:</b></p>
+<p>
+                How accessible is the data:
+                <br>
+                Odpověděli jste <span id="q5_answer"></span>, což vám dalo <span id="q5_score"></span> z možných 5 bodů.
+                <br/>
+                </p><p>
+                Is the data available online without requiring specialised protocols or tools once access has
+                been approved:
+                <br>
+                Odpověděli jste <span id="q6_answer"></span>, což vám dalo <span id="q6_score"></span> z možných 4 bodů.
+                <br>
+            </p><p>
+                Will the metadata record be available even if the data is no longer available:
+                <br>
+                Odpověděli jste <span id="q7_answer"></span>, což vám dalo <span id="q7_score"></span> z možného 1 bodu.
+                <br>
+            </p>
+                <p>This gives you <span id="a_total"></span> out of a possible 10 points.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="info_iscore" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modßal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">About Findable Score</h4>
+            </div>
+            <div class="modal-body">
+                <p><b>The score was derived as follows:</b></p>
+
+                What (file) format(s) is the data available in:
+                <br>
+                Odpověděli jste <span id="q8_answer"></span>, což vám dalo <span id="q8_score"></span> z možných 2 bodů.
+                <br/>
+                <p>
+                What best describes the types of vocabularies/ontologies/tagging schemas used to define
+                the data elements:
+                <br>
+                Odpověděli jste <span id="q9_answer"></span>, což vám dalo <span id="q9_score"></span> z možných 3 bodů.
+                <br>
+            </p><p>
+                How is the metadata linked to other data and metadata to provide context around the data:
+                <br>
+                You answered <span id="q10_answer"></span>, což vám dalo <span id="q10_score"></span> z možných 3 bodů.
+
+                <p>This gives you <span id="i_total"></span> z možných 8 bodů.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="info_rscore" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">About Findable Score</h4>
+            </div>
+            <div class="modal-body">
+                <p><b>The score was derived as follows:</b></p>
+                <p>
+                Does the dataset have any identifiers assigned?
+                <br>
+                Odpověděli jste <span id="q11_answer"></span>, což vám dalo <span id="q11_score"></span> z možných 4 bodů.
+                <br/>
+                </p><p>
+                Is the dataset identifier included in all mdetadata records:
+                <br>
+                Odpověděli jste <span id="q12_answer"></span>, což vám dalo <span id="q12_score"></span> z možných 2 bodů.
+                <br>
+            </p>
+                <p>This gives you <span id="r_total"></span> z možných 6 bodů.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
